@@ -1,5 +1,5 @@
 [package]
-name = "lambda-api"
+name = "sqlite-lambda-api"
 version = "0.1.0"
 edition = "2021"
 
@@ -23,3 +23,5 @@ tracing-subscriber = { version = "0.3", default-features = false, features = ["f
 serde = { version = "1.0.140", features = ["derive"] }
 serde_json = "1.0"
 hyper = "0.13.8"
+rusqlite = { version = "0.28.0", features = ["bundled"] }
+dotenv = "0.15.0"

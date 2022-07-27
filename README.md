@@ -1,12 +1,16 @@
-## rust-lambda-api
+# **Woah there! I appreciate the excitement, but this repo is NOT ready yet.**
 
-🦀 Create HTTP APIs with Rust, hosted on AWS Lambda (serverless compute) 🦀
+## rust-sqlite-lambda-api
+
+🦀 Create REST APIs with Rust & SQLite, hosted on AWS Lambda & EFS 🦀
 
 ### *Lightweight, fast, and preorganized*
 
-The template includes examples for routing, query parameters, request bodies, and response serialization, which are absent from *cargo-lambda*
+The template, is an extension of [rust-lambda-api](https://github.com/saucepoint/rust-lambda-api). Like its predecessor, this repo includes examples for routing and interfacing with SQLite, which are absent from *cargo-lambda*.
 
-All of the AWS infrastructure is created & handled with Terraform. What are you waiting for, anon?
+The file-based, cloud-hosted nature of SQLite introduces nuances around database schema migrations. This repo includes an additional Lambda function for managing the database
+
+All of the AWS infrastructure is created & handled with Terraform
 
 ---
 

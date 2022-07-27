@@ -1,25 +1,38 @@
 use lambda_http::{run, service_fn, Body, Error, Request, RequestExt, Response};
 use lambda_http::request::{RequestContext};
 use hyper::Method;
+use rusqlite::Connection;
+use std::env;
+
 mod api;
+mod database;
+
 
 fn resolve_routes(method: Method, route: &str, event: Request) -> Result<Response<Body>, Error> {
     println!("Resolving Route: {:?}", route);
+
+    // set the sqlite database path based on the environment variable MODE
+    let db_path = match env::var("MODE")?.as_str() {
+        "local" => "./db.sqlite",
+        "prod" => "/mnt/efs/db.sqlite",
+        _ => panic!("MODE environment variable is not set"),
+    };
+    let connection = Connection::open(db_path).unwrap();
 
     // route to function handlers based on the method and route
     match route {
         "/hello" => {
             match method {
-                Method::POST => api::hello::post(event),
-                Method::GET => api::hello::get(event),
+                Method::POST => api::hello::post(event, connection),
+                Method::GET => api::hello::get(event, connection),
                 _ => api::errors::handle_405(),
             }
         }
         // add additional routes here
         // "/foo" => {
         //     match method {
-        //         Method::POST => api::foo::post(event),
-        //         Method::GET => api::foo::get(event),
+        //         Method::POST => api::foo::post(event, connection),
+        //         Method::GET => api::foo::get(event, connection),
         //         _ => api::errors::handle_405(),
         //     }
         // }

@@ -41,7 +41,7 @@ pub fn handle_405() -> Result<Response<Body>, Error> {
 // Not really an error, but putting it here to keep the example code cleaner
 pub fn handle_welcome() -> Result<Response<Body>, Error> {
     let resp = GenericError {
-        message: "Welcome to the rust-lambda-api".to_string(),
+        message: "Welcome to the rust-sqlite-lambda-api".to_string(),
     };
     Ok(resp.into_response(StatusCode::OK))
 }

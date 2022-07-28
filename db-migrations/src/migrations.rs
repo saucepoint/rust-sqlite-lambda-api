@@ -5,6 +5,8 @@ pub fn execute_migration(command: &str, connection: Connection) -> Result<&str, 
     match command {
         "drop_file" => Ok(drop_database()),
         "create_hello_table" => Ok(create_hello_table(connection)),
+        // Register new migrations here
+        // "create_user_table" => Ok(create_user_table(connection)),
         _ => Err(format!("Unregistered Command: {}", command)),
     }
 }
@@ -27,3 +29,5 @@ fn create_hello_table(connection: Connection) -> &'static str {
 
     "Created hello table"
 }
+
+// Define new functions which migrate the database here

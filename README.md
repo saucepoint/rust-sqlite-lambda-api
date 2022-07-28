@@ -46,7 +46,7 @@ All of the AWS infrastructure is created & handled with Terraform
     cd db-migrations/
 
     # redeploy the function so it has the environment variable
-    cargo lambda build --release && cargo lambda deploy --iam-role arn:aws:iam::632902436790:role/rust-sqlite-lambda-api --env-var MODE=prod
+    cargo lambda build --release && cargo lambda deploy --iam-role arn:aws:iam::<AWS_ACCOUNT_ID>:role/rust-sqlite-lambda-api --env-var MODE=prod
 
     # send the command which maps to a Rust function that creates the `hello` table
     cargo lambda invoke --remote --data-ascii '{"command": "create_hello_table"}' db-migrations
@@ -55,7 +55,7 @@ All of the AWS infrastructure is created & handled with Terraform
 2. Deploy the API so its assigned a Function URL
     ```bash
     cd lambda-api
-    cargo lambda build --release && cargo lambda deploy --iam-role arn:aws:iam::632902436790:role/rust-sqlite-lambda-api --enable-function-url --env-var MODE=prod
+    cargo lambda build --release && cargo lambda deploy --iam-role arn:aws:iam::<AWS_ACCOUNT_ID>:role/rust-sqlite-lambda-api --enable-function-url --env-var MODE=prod
     ```
 
 2. Test the API. Get the Function URL from the previous step, or on AWS console

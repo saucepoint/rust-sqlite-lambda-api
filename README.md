@@ -4,7 +4,7 @@
 
 ### *Lightweight, fast, hyper-affordable, and preorganized*
 
-The template, is an extension of [rust-lambda-api](https://github.com/saucepoint/rust-lambda-api). Like its predecessor, this repo includes structured & organized examples that are not found in *cargo-lambda* templates.
+The template, is an extension of [rust-lambda-api](https://github.com/saucepoint/rust-lambda-api). Like its predecessor, this repo includes structured & organized examples that are not found in *cargo-lambda* templates. The main difference of this template is it include infrastructure (EFS) and code examples for working with SQLite in Rust
 
 The file-based, cloud-hosted nature of SQLite introduces nuances around database schema migrations. This repo includes an additional Lambda function for managing the database
 

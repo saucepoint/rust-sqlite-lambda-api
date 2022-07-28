@@ -1,12 +1,10 @@
-# **Woah there! I appreciate the excitement, but this repo is NOT ready yet.**
-
 ## rust-sqlite-lambda-api
 
 🦀 Create REST APIs with Rust & SQLite, hosted on AWS Lambda & EFS 🦀
 
-### *Lightweight, fast, and preorganized*
+### *Lightweight, fast, hyper-affordable, and preorganized*
 
-The template, is an extension of [rust-lambda-api](https://github.com/saucepoint/rust-lambda-api). Like its predecessor, this repo includes examples for routing and interfacing with SQLite, which are absent from *cargo-lambda*.
+The template, is an extension of [rust-lambda-api](https://github.com/saucepoint/rust-lambda-api). Like its predecessor, this repo includes structured & organized examples that are not found in *cargo-lambda* templates.
 
 The file-based, cloud-hosted nature of SQLite introduces nuances around database schema migrations. This repo includes an additional Lambda function for managing the database
 
@@ -48,11 +46,11 @@ All of the AWS infrastructure is created & handled with Terraform
     # redeploy the function so it has the environment variable
     cargo lambda build --release && cargo lambda deploy --iam-role arn:aws:iam::<AWS_ACCOUNT_ID>:role/rust-sqlite-lambda-api --env-var MODE=prod
 
-    # send the command which maps to a Rust function that creates the `hello` table
+    # Invoke the lambda and provide the command which maps to a Rust function
     cargo lambda invoke --remote --data-ascii '{"command": "create_hello_table"}' db-migrations
     ```
 
-2. Deploy the API so its assigned a Function URL
+2. Deploy the API so it's assigned a Function URL
     ```bash
     cd lambda-api
     cargo lambda build --release && cargo lambda deploy --iam-role arn:aws:iam::<AWS_ACCOUNT_ID>:role/rust-sqlite-lambda-api --enable-function-url --env-var MODE=prod
@@ -79,14 +77,14 @@ All of the AWS infrastructure is created & handled with Terraform
 ### Adding Routes:
 
 1. Create a new file such as `lambda-api/src/api/foo.rs`
-    - Add GET/POST handlers, Request/Response structs, similar to [src/api/hello.rs](https://github.com/saucepoint/rust-lambda-api/blob/db213e32e5c5e0fc4dd5b3b5cdf14047ff6ddaa9/lambda-api/src/api/hello.rs)
+    - Add GET/POST handlers, Request/Response structs, similar to [src/api/hello.rs](https://github.com/saucepoint/rust-sqlite-lambda-api/blob/44e0b6e5b5d3c41d78212bcac052cf81627da1c2/lambda-api/src/api/hello.rs)
 
-2. Register the route in `lambda-api/src/main.rs` similar to [this](https://github.com/saucepoint/rust-lambda-api/blob/1b3ccfea94e0378512a98bce56d7ef3a0f843715/lambda-api/src/main.rs#L18-L25)
+2. Register the route in `lambda-api/src/main.rs` similar to [this](https://github.com/saucepoint/rust-sqlite-lambda-api/blob/44e0b6e5b5d3c41d78212bcac052cf81627da1c2/lambda-api/src/main.rs#L31-L38)
     ```rust
     "/foo" => {
         match method {
-            Method::POST => api::foo::post(event),
-            Method::GET => api::foo::get(event),
+            Method::POST => api::foo::post(event, connection),
+            Method::GET => api::foo::get(event, connection),
             _ => api::errors::handle_405(),
         }
     }
@@ -95,10 +93,10 @@ All of the AWS infrastructure is created & handled with Terraform
 ### Rename the function:
 
 1. `lambda-api/Cargo.toml`
-    - name = ~~"lambda-api"~~ --> NEW_FUNCTION_NAME
+    - name = ~~"rust-sqlite-lambda-api"~~ --> NEW_FUNCTION_NAME
 2. `terraform/main.tf`
-    - function_name = ~~"lambda-api"~~ --> NEW_FUNCTION_NAME
-    - filename = ~~"../lambda-api/target/lambda/lambda-api/bootstrap.zip"~~ --> "../lambda-api/target/lambda/NEW_FUNCTION_NAME/bootstrap.zip"
+    - function_name = ~~"rust-sqlite-lambda-api"~~ --> NEW_FUNCTION_NAME
+    - filename = ~~"../lambda-api/target/lambda/rust-sqlite-lambda-api/bootstrap.zip"~~ --> "../lambda-api/target/lambda/NEW_FUNCTION_NAME/bootstrap.zip"
 
 3. Apply changes
     ```bash
@@ -129,13 +127,12 @@ Testing:
 
 The base URL will be *127.0.0.1:9000/lambda-url/lambda-api*
 ```
-GET 127.0.0.1:9000/lambda-url/lambda-api/hello?name=saucepoint&number=100
+GET 127.0.0.1:9000/lambda-url/lambda-api/hello?name=saucepoint
 
 POST 127.0.0.1:9000/lambda-url/lambda-api/hello
 // with raw JSON body:
 {
-    "name": "saucepoint",
-    "number": 100
+    "name": "saucepoint"
 }
 ```
 
@@ -152,7 +149,7 @@ This is my preferred deployment call:
 
 *Get your IAM Role's ARN from the AWS web console*
 ```bash
-cargo lambda build --release && cargo lambda deploy --enable-function-url --iam-role arn:aws:iam::<AWS_ACCOUNT_NUMBER>:role/rust-lambda-api 
+cargo lambda build --release && cargo lambda deploy --enable-function-url --iam-role arn:aws:iam::<AWS_ACCOUNT_NUMBER>:role/rust-lambda-api --env-var MODE=prod
 ```
 
 ---

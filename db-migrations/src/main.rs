@@ -53,7 +53,7 @@ async fn function_handler(event: LambdaEvent<Request>) -> Result<Response, Error
     else {
         fs::File::create(db_path).expect("Failed to create file");
     }
-    let connection = sqlite::open(db_path).unwrap();
+    let connection: Connection = Connection::open(db_path).unwrap();
 
     let result = migrations::execute_migration(command, connection).unwrap();
 

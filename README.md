@@ -26,7 +26,6 @@ All of the AWS infrastructure is created & handled with Terraform
     ```bash
     cd lambda-api/
     cargo lambda build --output-format zip
-    cd ..
     ```
 2. Use terraform to spin up AWS infrastructure
     ```
@@ -36,9 +35,45 @@ All of the AWS infrastructure is created & handled with Terraform
     // read the changes reported by terraform
     // type yes and hit Enter
     // Successful infra deployment will return:
-    // Apply complete! Resources: 3 added, 0 changed, 0 destroyed.
+    // Apply complete! Resources: 17 added, 0 changed, 0 destroyed.
     ```
     *Note:* The initial creation of the Lambda will take up to 1 min to process. If you attempt a `cargo lambda deploy` shortly after resource-creation, it will fail if the Lambda has an in-progress update
+
+2. Continue the following steps to test the code:
+
+2. Create the example sqlite table:
+    ```bash
+    cd db-migrations/
+
+    # redeploy the function so it has the environment variable
+    cargo lambda build --release && cargo lambda deploy --iam-role arn:aws:iam::632902436790:role/rust-sqlite-lambda-api --env-var MODE=prod
+
+    # send the command which maps to a Rust function that creates the `hello` table
+    cargo lambda invoke --remote --data-ascii '{"command": "create_hello_table"}' db-migrations
+    ```
+
+2. Deploy the API so its assigned a Function URL
+    ```bash
+    cd lambda-api
+    cargo lambda build --release && cargo lambda deploy --iam-role arn:aws:iam::632902436790:role/rust-sqlite-lambda-api --enable-function-url --env-var MODE=prod
+    ```
+
+2. Test the API. Get the Function URL from the previous step, or on AWS console
+    ```
+    POST https://<BIG-ASS-HASH>.lambda-url.us-east-2.on.aws/hello
+    // with raw JSON body:
+    {
+        "name": "saucepoint"
+    }
+
+    GET https://<BIG-ASS-HASH>.lambda-url.us-east-2.on.aws/hello?name=saucepoint
+    // example response:
+    {
+        "id": 1,
+        "name": "saucepoint",
+        "count": 1
+    }
+    ```
 
 # Configuration
 ### Adding Routes:
@@ -75,6 +110,11 @@ All of the AWS infrastructure is created & handled with Terraform
 
 You can use terraform or AWS console to attach additional infrastructure
 
+## Database Migrations
+
+To apply changes to the sqlite database (i.e. creating tables, modifying tables, running data migrations, etc):
+
+Please see: [db-migrations/README.md](db-migrations/README.md)
 
 # Local Development
 

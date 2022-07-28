@@ -1,3 +1,4 @@
+use rusqlite::Connection;
 
 
 pub fn execute_migration(command: &str, connection: Connection) -> Result<&str, String> {

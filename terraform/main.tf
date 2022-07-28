@@ -43,7 +43,7 @@ resource "aws_iam_policy_attachment" "attach-basiclambda" {
 
 resource "aws_iam_policy_attachment" "attach-lambdavpc" {
   name = "attach-lambdavpc"
-  roles = ["${aws_iam_role.iam_for_lambda.name}"]
+  roles = ["${aws_iam_role.rust-sqlite-lambda-api.name}"]
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
 }
 
@@ -138,11 +138,23 @@ resource "aws_lambda_function" "sqlite-lambda-api" {
   runtime = "provided.al2"
   filename = "../lambda-api/target/lambda/rust-sqlite-lambda-api/bootstrap.zip"
   timeout = 30  # 30 second timeout for Lambda invokations
+
+  file_system_config {
+    arn = aws_efs_access_point.lambda_efs_access_point.arn
+    local_mount_path = "/mnt/efs"
+  }
+
+  vpc_config {
+    subnet_ids = [aws_subnet.lambda_subnet.id, aws_subnet.lambda_public_subnet.id]
+    security_group_ids = [aws_security_group.rust-sqlite-lambda-sg.id]
+  }
+
+  depends_on = [aws_efs_mount_target.lambda_mount_target]
 }
 
 resource "aws_lambda_function" "db-migrations" {
   function_name = "db-migrations"
-  role = aws_iam_role.iam_for_lambda.arn
+  role = aws_iam_role.rust-sqlite-lambda-api.arn
   handler = "bootstrap"
   runtime = "provided.al2"
   filename = "../db-migrations/target/lambda/db-migrations/bootstrap.zip"
